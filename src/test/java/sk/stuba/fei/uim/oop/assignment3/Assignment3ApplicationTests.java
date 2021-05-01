@@ -1,5 +1,6 @@
 package sk.stuba.fei.uim.oop.assignment3;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import sk.stuba.fei.uim.oop.assignment3.shopping_cart.ShoppingCartController;
 import sk.stuba.fei.uim.oop.assignment3.user.User;
 import sk.stuba.fei.uim.oop.assignment3.user.UserController;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -58,7 +60,7 @@ class Assignment3ApplicationTests {
                 .content(objectToString(userToUpdate))
         ).andExpect(status().isOk())
                 .andDo(mvcResult -> {
-                    User userToControl = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), User.class);
+                    User userToControl = stringToObject(mvcResult, User.class);
                     assert Objects.equals(userToControl.getSurname(), userToUpdate.getSurname());
                     assert Objects.equals(userToControl.getName(), userToUpdate.getName());
                 });
@@ -70,7 +72,7 @@ class Assignment3ApplicationTests {
         mockMvc.perform(get("/user/" + user.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andDo(mvcResult -> {
-            User userToControl = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), User.class);
+            User userToControl = stringToObject(mvcResult, User.class);
             assert Objects.equals(userToControl.getId(), user.getId());
         });
     }
@@ -82,7 +84,7 @@ class Assignment3ApplicationTests {
         mockMvc.perform(get("/user")
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andDo(mvcResult -> {
-            ArrayList list = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ArrayList.class);
+            ArrayList list = stringToObject(mvcResult, ArrayList.class);
             assert list.size() == 2;
         });
     }
@@ -99,7 +101,7 @@ class Assignment3ApplicationTests {
         mockMvc.perform(get("/product")
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andDo(mvcResult -> {
-            ArrayList list = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ArrayList.class);
+            ArrayList list = stringToObject(mvcResult, ArrayList.class);
             assert list.size() == 2;
         });
     }
@@ -114,12 +116,12 @@ class Assignment3ApplicationTests {
                 .content(objectToString(user))
         ).andExpect(status().isOk())
                 .andDo(mvcResult1 -> {
-                    User userToControl = new ObjectMapper().readValue(mvcResult1.getResponse().getContentAsString(), User.class);
+                    User userToControl = stringToObject(mvcResult1, User.class);
                     assert Objects.equals(userToControl.getName(), user.getName());
                     assert Objects.equals(userToControl.getSurname(), user.getSurname());
                     assert Objects.nonNull(userToControl.getId());
                 }).andReturn();
-        return new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), User.class);
+        return stringToObject(mvcResult, User.class);
     }
 
     Product addProduct(String name, String description, String unit, Long amount) throws Exception {
@@ -134,14 +136,14 @@ class Assignment3ApplicationTests {
                 .content(objectToString(product))
         ).andExpect(status().isOk())
                 .andDo(mvcResult1 -> {
-                    Product productToControl = new ObjectMapper().readValue(mvcResult1.getResponse().getContentAsString(), Product.class);
+                    Product productToControl = stringToObject(mvcResult1, Product.class);
                     assert Objects.equals(product.getName(), productToControl.getName());
                     assert Objects.equals(product.getDescription(), productToControl.getDescription());
                     assert Objects.equals(product.getUnit(), productToControl.getUnit());
                     assert Objects.equals(product.getAmount(), productToControl.getAmount());
                 })
                 .andReturn();
-        return new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), Product.class);
+        return stringToObject(mvcResult, Product.class);
     }
 
 
@@ -151,6 +153,10 @@ class Assignment3ApplicationTests {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static <K> K stringToObject(MvcResult object, Class<K> objectClass) throws UnsupportedEncodingException, JsonProcessingException {
+        return new ObjectMapper().readValue(object.getResponse().getContentAsString(), objectClass);
     }
 
 }

@@ -106,6 +106,17 @@ class Assignment3ApplicationTests {
         });
     }
 
+    @Test
+    void testGetProductById() throws Exception {
+        Product product = addProduct("name", "description", "unit", 1L);
+        mockMvc.perform(get("/product/" + product.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andDo(mvcResult -> {
+            Product productToControl = stringToObject(mvcResult, Product.class);
+            assert Objects.equals(productToControl.getId(), product.getId());
+        });
+    }
+
     User addUser(String name, String surname) throws Exception {
         User user = new User();
         user.setName(name);

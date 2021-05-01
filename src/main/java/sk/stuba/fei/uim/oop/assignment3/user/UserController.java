@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
@@ -26,8 +27,10 @@ public class UserController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody User getUser(@PathVariable("id") Long userId, @RequestBody User body) {
         User updatedUser = userRepository.findUserById(userId);
-        updatedUser.setName(body.getName());
-        updatedUser.setSurname(body.getSurname());
+        if(Objects.nonNull(body.getName()))
+            updatedUser.setName(body.getName());
+        if(Objects.nonNull(body.getSurname()))
+            updatedUser.setSurname(body.getSurname());
         userRepository.save(updatedUser);
         return updatedUser;
     }

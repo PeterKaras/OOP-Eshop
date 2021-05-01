@@ -65,7 +65,7 @@ class Assignment3ApplicationTests {
     }
 
     @Test
-    void getUserById() throws Exception {
+    void testGetUserById() throws Exception {
         User user = addUser("Objekt", "Objektovy");
         mockMvc.perform(get("/user/" + user.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -76,7 +76,7 @@ class Assignment3ApplicationTests {
     }
 
     @Test
-    void getAll() throws Exception {
+    void testGetAllUsers() throws Exception {
         addUser("Objekt1", "O");
         addUser("Objekt2", "O");
         mockMvc.perform(get("/user")
@@ -90,6 +90,18 @@ class Assignment3ApplicationTests {
     @Test
     void testAddProduct() throws Exception {
         addProduct("name","description", "unit", 1L);
+    }
+
+    @Test
+    void testGetAllProduct() throws Exception {
+        addProduct("name","description", "unit", 1L);
+        addProduct("name2","description2", "unit2", 2L);
+        mockMvc.perform(get("/product")
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andDo(mvcResult -> {
+            ArrayList list = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ArrayList.class);
+            assert list.size() == 2;
+        });
     }
 
     User addUser(String name, String surname) throws Exception {
@@ -133,7 +145,7 @@ class Assignment3ApplicationTests {
     }
 
 
-    String objectToString(Object object) {
+    static String objectToString(Object object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
         } catch (Exception e) {

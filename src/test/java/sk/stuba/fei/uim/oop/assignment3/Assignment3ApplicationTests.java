@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import sk.stuba.fei.uim.oop.assignment3.products.Product;
 import sk.stuba.fei.uim.oop.assignment3.products.ProductController;
 import sk.stuba.fei.uim.oop.assignment3.shopping_cart.ShoppingCartController;
 import sk.stuba.fei.uim.oop.assignment3.user.User;
@@ -44,29 +45,29 @@ class Assignment3ApplicationTests {
 
     @Test
     void testCreateUser() throws Exception {
-        createUser("Objekt" , "Objektovy");
+        addUser("Objekt", "Objektovy");
     }
 
     @Test
     void testUpdateUser() throws Exception {
-        User userToUpdate = createUser("Objekt", "Objektovy");
+        User userToUpdate = addUser("Objekt", "Objektovy");
         userToUpdate.setSurname("Zmena");
-        mockMvc.perform(put("/user/"+ userToUpdate.getId())
+        mockMvc.perform(put("/user/" + userToUpdate.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectToString(userToUpdate))
         ).andExpect(status().isOk())
-        .andDo(mvcResult -> {
-            User userToControl = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), User.class);
-            assert Objects.equals(userToControl.getSurname(), userToUpdate.getSurname());
-            assert Objects.equals(userToControl.getName(), userToUpdate.getName());
-        });
+                .andDo(mvcResult -> {
+                    User userToControl = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), User.class);
+                    assert Objects.equals(userToControl.getSurname(), userToUpdate.getSurname());
+                    assert Objects.equals(userToControl.getName(), userToUpdate.getName());
+                });
     }
 
     @Test
     void getUserById() throws Exception {
-        User user = createUser("Objekt", "Objektovy");
-        mockMvc.perform(get("/user/"+ user.getId())
+        User user = addUser("Objekt", "Objektovy");
+        mockMvc.perform(get("/user/" + user.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andDo(mvcResult -> {
             User userToControl = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), User.class);
@@ -76,18 +77,22 @@ class Assignment3ApplicationTests {
 
     @Test
     void getAll() throws Exception {
-        createUser("Objekt1", "O");
-        createUser("Objekt2", "O");
+        addUser("Objekt1", "O");
+        addUser("Objekt2", "O");
         mockMvc.perform(get("/user")
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andDo(mvcResult -> {
             ArrayList list = new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), ArrayList.class);
             assert list.size() == 2;
         });
-
     }
 
-    User createUser(String name, String surname) throws Exception {
+    @Test
+    void testAddProduct() throws Exception {
+        addProduct("name","description", "unit", 1L);
+    }
+
+    User addUser(String name, String surname) throws Exception {
         User user = new User();
         user.setName(name);
         user.setSurname(surname);
@@ -105,8 +110,30 @@ class Assignment3ApplicationTests {
         return new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), User.class);
     }
 
+    Product addProduct(String name, String description, String unit, Long amount) throws Exception {
+        Product product = new Product();
+        product.setName(name);
+        product.setDescription(description);
+        product.setUnit(unit);
+        product.setAmount(amount);
+        MvcResult mvcResult = mockMvc.perform(post("/product")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectToString(product))
+        ).andExpect(status().isOk())
+                .andDo(mvcResult1 -> {
+                    Product productToControl = new ObjectMapper().readValue(mvcResult1.getResponse().getContentAsString(), Product.class);
+                    assert Objects.equals(product.getName(), productToControl.getName());
+                    assert Objects.equals(product.getDescription(), productToControl.getDescription());
+                    assert Objects.equals(product.getUnit(), productToControl.getUnit());
+                    assert Objects.equals(product.getAmount(), productToControl.getAmount());
+                })
+                .andReturn();
+        return new ObjectMapper().readValue(mvcResult.getResponse().getContentAsString(), Product.class);
+    }
 
-    String objectToString(Object object){
+
+    String objectToString(Object object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
         } catch (Exception e) {

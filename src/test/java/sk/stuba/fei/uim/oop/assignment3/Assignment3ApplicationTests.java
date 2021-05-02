@@ -197,7 +197,27 @@ class Assignment3ApplicationTests {
     // ShoppingCart tests ==========================================================================================
     @Test
     void testAddShoppingCart() throws Exception {
-        addProduct("name", "description", "unit", 1L);
+        addCart(status().isCreated());
+    }
+
+    @Test
+    void testGetShoppingCartById() throws Exception{
+        TestCartResponse cart = addCart(status().isCreated());
+        TestCartResponse cartToControl = getCart(cart.getId(), status().isOk());
+        assert Objects.equals(cartToControl.getId(), cart.getId());
+    }
+
+    @Test
+    void testDeleteShoppingCartById() throws Exception {
+        TestCartResponse cart = addCart(status().isCreated());
+        mockMvc.perform(delete("/cart/"+ cart.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk());
+        mockMvc.perform(get("/cart/"+ cart.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
     }
 
     TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {
@@ -227,19 +247,22 @@ class Assignment3ApplicationTests {
     }
 
     TestCartResponse addCart(ResultMatcher statusMatcher) throws Exception {
-        // TODO
         MvcResult mvcResult = mockMvc.perform(post("/cart")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(statusMatcher)
-                .andDo(mvcResult1 -> {
-                    TestProductResponse productToControl = stringToObject(mvcResult1, TestProductResponse.class);
-                    assert Objects.equals(product.getName(), productToControl.getName());
-                    assert Objects.equals(product.getDescription(), productToControl.getDescription());
-                    assert Objects.equals(product.getUnit(), productToControl.getUnit());
-                    assert Objects.equals(product.getAmount(), productToControl.getAmount());
-                })
                 .andReturn();
-        return stringToObject(mvcResult, TestProductResponse.class);
+        return stringToObject(mvcResult, TestCartResponse.class);
+    }
+
+    TestCartResponse getCart(long cartId,ResultMatcher statusMatcher) throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/cart/"+ cartId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(statusMatcher).andDo(mvcResult1 -> {
+            TestCartResponse cartToControl = stringToObject(mvcResult1, TestCartResponse.class);
+            assert Objects.equals(cartToControl.getId(), cartId);
+        }).andReturn();
+        return stringToObject(mvcResult, TestCartResponse.class);
     }
 
     static String objectToString(Object object) {

@@ -138,6 +138,26 @@ class Assignment3ApplicationTests {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void testGetProductAmount() throws Exception {
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
+        mockMvc.perform(get("/product/" + product.getId() + "/amount")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(mvcResult -> {
+                    Amount response = stringToObject(mvcResult, Amount.class);
+                    assert Objects.equals(response.getAmount(), product.getAmount());
+                });
+    }
+
+    @Test
+    void testGetMissingProductAmount() throws Exception {
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
+        mockMvc.perform(get("/product/" + (product.getId() + 1) + "/amount")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
     TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {
         return addProduct(name, description, unit, amount, status().is2xxSuccessful());
     }
@@ -179,10 +199,15 @@ class Assignment3ApplicationTests {
 
     @Getter
     @Setter
-    private static class TestProductRequest {
+    private static class Amount {
+        private long amount;
+    }
+
+    @Getter
+    @Setter
+    private static class TestProductRequest extends Amount {
         private String name;
         private String description;
-        private long amount;
         private String unit;
         private double price;
     }

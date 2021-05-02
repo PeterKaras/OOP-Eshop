@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.logic.IProductService;
+import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductRequest;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductResponse;
 
 import java.util.List;
@@ -19,7 +20,12 @@ public class ProductController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ProductResponse> getAllProducts() {
-        return service.getAll().stream().map(ProductResponse::new).collect(Collectors.toList());
+        return this.service.getAll().stream().map(ProductResponse::new).collect(Collectors.toList());
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ProductResponse addProduct(@RequestBody ProductRequest body) {
+        return new ProductResponse(this.service.create(body));
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,16 +52,5 @@ public class ProductController {
         product.setAmount(product.getAmount() + amount);
         productRepository.save(product);
         return product.getAmount();
-    }
-
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Product addProduct(@RequestBody Product body) {
-        Product product = new Product();
-        product.setName(body.getName());
-        product.setDescription(body.getDescription());
-        product.setUnit(body.getUnit());
-        product.setAmount(body.getAmount());
-        productRepository.save(product);
-        return product;
     }
 }

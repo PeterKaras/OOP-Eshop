@@ -1,13 +1,15 @@
-package sk.stuba.fei.uim.oop.assignment3.shopping_cart;
+package sk.stuba.fei.uim.oop.assignment3.cart.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sk.stuba.fei.uim.oop.assignment3.products.Product;
-import sk.stuba.fei.uim.oop.assignment3.products.ProductRepository;
-import sk.stuba.fei.uim.oop.assignment3.user.UserRepository;
+import sk.stuba.fei.uim.oop.assignment3.cart.data.CartEntry;
+import sk.stuba.fei.uim.oop.assignment3.cart.data.ShoppingCart;
+import sk.stuba.fei.uim.oop.assignment3.cart.data.ShoppingCartRepository;
+import sk.stuba.fei.uim.oop.assignment3.products.data.Product;
+import sk.stuba.fei.uim.oop.assignment3.products.data.ProductRepository;
 
 import java.util.Optional;
 
@@ -16,18 +18,15 @@ import java.util.Optional;
 public class ShoppingCartController {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
     private ShoppingCartRepository cartRepository;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ShoppingCart addCart(@RequestBody Long userId) {
+    public @ResponseBody
+    ShoppingCart addCart(@RequestBody Long userId) {
         ShoppingCart cart = new ShoppingCart();
-        cart.setUser(userRepository.findUserById(userId));
         cartRepository.save(cart);
         return cart;
     }

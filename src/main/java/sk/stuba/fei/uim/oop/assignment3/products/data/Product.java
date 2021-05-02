@@ -1,4 +1,4 @@
-package sk.stuba.fei.uim.oop.assignment3.products;
+package sk.stuba.fei.uim.oop.assignment3.products.data;
 
 import lombok.Data;
 

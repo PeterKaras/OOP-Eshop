@@ -9,9 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import sk.stuba.fei.uim.oop.assignment3.products.Product;
-import sk.stuba.fei.uim.oop.assignment3.products.ProductController;
-import sk.stuba.fei.uim.oop.assignment3.shopping_cart.ShoppingCartController;
+import sk.stuba.fei.uim.oop.assignment3.products.data.Product;
+import sk.stuba.fei.uim.oop.assignment3.products.web.ProductController;
+import sk.stuba.fei.uim.oop.assignment3.cart.web.ShoppingCartController;
 import sk.stuba.fei.uim.oop.assignment3.user.User;
 import sk.stuba.fei.uim.oop.assignment3.user.UserController;
 

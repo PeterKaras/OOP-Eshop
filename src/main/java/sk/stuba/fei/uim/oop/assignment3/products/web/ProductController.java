@@ -1,8 +1,10 @@
-package sk.stuba.fei.uim.oop.assignment3.products;
+package sk.stuba.fei.uim.oop.assignment3.products.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import sk.stuba.fei.uim.oop.assignment3.products.data.Product;
+import sk.stuba.fei.uim.oop.assignment3.products.data.ProductRepository;
 
 import java.util.List;
 

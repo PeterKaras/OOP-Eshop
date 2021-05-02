@@ -17,6 +17,7 @@ import sk.stuba.fei.uim.oop.assignment3.cart.web.ShoppingCartController;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -193,6 +194,12 @@ class Assignment3ApplicationTests {
                 .andExpect(status().isNotFound());
     }
 
+    // ShoppingCart tests ==========================================================================================
+    @Test
+    void testAddShoppingCart() throws Exception {
+        addProduct("name", "description", "unit", 1L);
+    }
+
     TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {
         return addProduct(name, description, unit, amount, status().is2xxSuccessful());
     }
@@ -219,6 +226,21 @@ class Assignment3ApplicationTests {
         return stringToObject(mvcResult, TestProductResponse.class);
     }
 
+    TestCartResponse addCart(ResultMatcher statusMatcher) throws Exception {
+        // TODO
+        MvcResult mvcResult = mockMvc.perform(post("/cart")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(statusMatcher)
+                .andDo(mvcResult1 -> {
+                    TestProductResponse productToControl = stringToObject(mvcResult1, TestProductResponse.class);
+                    assert Objects.equals(product.getName(), productToControl.getName());
+                    assert Objects.equals(product.getDescription(), productToControl.getDescription());
+                    assert Objects.equals(product.getUnit(), productToControl.getUnit());
+                    assert Objects.equals(product.getAmount(), productToControl.getAmount());
+                })
+                .andReturn();
+        return stringToObject(mvcResult, TestProductResponse.class);
+    }
 
     static String objectToString(Object object) {
         try {
@@ -251,5 +273,20 @@ class Assignment3ApplicationTests {
     @Setter
     private static class TestProductResponse extends TestProductRequest {
         private long id;
+    }
+
+    @Getter
+    @Setter
+    private static class TestCartResponse {
+        private long id;
+        private List<TestCartEntry> shoppingList;
+        private boolean payed;
+    }
+
+    @Getter
+    @Setter
+    private static class TestCartEntry {
+        private Long productId;
+        private Long amount;
     }
 }

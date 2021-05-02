@@ -13,4 +13,6 @@ public interface IShoppingCartService {
     void delete(long id) throws NotFoundException;
 
     ShoppingCart addToCart(long id, CartEntry body) throws NotFoundException, IllegalOperationException;
+
+    double payForCart(long id) throws NotFoundException, IllegalOperationException;
 }

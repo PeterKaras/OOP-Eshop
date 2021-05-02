@@ -7,7 +7,6 @@ import sk.stuba.fei.uim.oop.assignment3.cart.data.ShoppingCartRepository;
 import sk.stuba.fei.uim.oop.assignment3.cart.web.bodies.CartEntry;
 import sk.stuba.fei.uim.oop.assignment3.exception.IllegalOperationException;
 import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
-import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.logic.IProductService;
 
 import java.util.List;
@@ -43,10 +42,7 @@ public class ShoppingCartService implements IShoppingCartService {
 
     @Override
     public ShoppingCart addToCart(long id, CartEntry body) throws NotFoundException, IllegalOperationException {
-        ShoppingCart cart = this.getById(id);
-        if (cart.isPayed()) {
-            throw new IllegalOperationException();
-        }
+        ShoppingCart cart = this.getUnpaid(id);
         this.productService.removeAmount(body.getProductId(), body.getAmount());
         var existingEntry = this.findCartEntryWithProduct(cart.getShoppingList(), body.getProductId());
         if (existingEntry == null) {
@@ -55,6 +51,23 @@ public class ShoppingCartService implements IShoppingCartService {
             existingEntry.setAmount(existingEntry.getAmount() + body.getAmount());
         }
         return this.repository.save(cart);
+    }
+
+    @Override
+    public double payForCart(long id) throws NotFoundException, IllegalOperationException {
+        ShoppingCart cart = this.getUnpaid(id);
+        double sum = cart.getShoppingList().stream().mapToDouble(item -> item.getAmount() * item.getProduct().getPrice()).sum();
+        cart.setPayed(true);
+        this.repository.save(cart);
+        return sum;
+    }
+
+    private ShoppingCart getUnpaid(long id) throws NotFoundException, IllegalOperationException {
+        ShoppingCart cart = this.getById(id);
+        if (cart.isPayed()) {
+            throw new IllegalOperationException();
+        }
+        return cart;
     }
 
     private sk.stuba.fei.uim.oop.assignment3.cart.data.CartEntry findCartEntryWithProduct(List<sk.stuba.fei.uim.oop.assignment3.cart.data.CartEntry> entries, long productId) {

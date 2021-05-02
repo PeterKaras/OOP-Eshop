@@ -52,12 +52,9 @@ public class ProductController {
     public Amount getAmount(@PathVariable("id") Long productId) throws NotFoundException {
         return new Amount(this.service.getAmount(productId));
     }
-//
-//    @PostMapping(value = "/amount/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public @ResponseBody Long addAmount(@PathVariable("id") Long productId, @RequestBody Long amount) {
-//        Product product = productRepository.findProductById(productId);
-//        product.setAmount(product.getAmount() + amount);
-//        productRepository.save(product);
-//        return product.getAmount();
-//    }
+
+    @PostMapping(value = "/{id}/amount", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Amount addAmount(@PathVariable("id") Long productId, @RequestBody Long amount) throws NotFoundException {
+        return new Amount(this.service.addAmount(productId, amount));
+    }
 }

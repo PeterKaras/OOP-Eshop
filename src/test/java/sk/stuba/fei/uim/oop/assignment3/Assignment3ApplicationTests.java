@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
-import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.web.ProductController;
 import sk.stuba.fei.uim.oop.assignment3.cart.web.ShoppingCartController;
 
@@ -59,7 +58,7 @@ class Assignment3ApplicationTests {
         mockMvc.perform(get("/product")
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andDo(mvcResult -> {
-            ArrayList list = stringToObject(mvcResult, ArrayList.class);
+            var list = stringToObject(mvcResult, ArrayList.class);
             assert list.size() == 2;
         });
     }
@@ -70,9 +69,52 @@ class Assignment3ApplicationTests {
         mockMvc.perform(get("/product/" + product.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andDo(mvcResult -> {
-            Product productToControl = stringToObject(mvcResult, Product.class);
+            TestProductResponse productToControl = stringToObject(mvcResult, TestProductResponse.class);
             assert Objects.equals(productToControl.getId(), product.getId());
         });
+    }
+
+    @Test
+    void testGetMissingProductById() throws Exception {
+        mockMvc.perform(get("/product/100")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testUpdateProduct() throws Exception {
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
+        TestProductRequest update1 = new TestProductRequest();
+        update1.name = "updated name";
+        TestProductRequest update2 = new TestProductRequest();
+        update2.description = "updated description";
+        mockMvc.perform(put("/product/" + product.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectToString(update1)))
+                .andExpect(status().isOk()).andDo(mvcResult -> {
+            TestProductResponse response = stringToObject(mvcResult, TestProductResponse.class);
+            assert Objects.equals(response.getName(), update1.getName());
+            assert Objects.equals(response.getDescription(), product.getDescription());
+        });
+        mockMvc.perform(put("/product/" + product.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectToString(update2)))
+                .andExpect(status().isOk()).andDo(mvcResult -> {
+            TestProductResponse response = stringToObject(mvcResult, TestProductResponse.class);
+            assert Objects.equals(response.getName(), update1.getName());
+            assert Objects.equals(response.getDescription(), update2.getDescription());
+        });
+    }
+
+    @Test
+    void testUpdateMissingProduct() throws Exception {
+        mockMvc.perform(put("/product/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectToString(new TestProductRequest())))
+                .andExpect(status().isNotFound());
     }
 
     TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {

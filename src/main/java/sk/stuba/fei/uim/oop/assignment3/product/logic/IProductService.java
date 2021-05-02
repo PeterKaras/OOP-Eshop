@@ -12,4 +12,5 @@ public interface IProductService {
     Product create(ProductRequest request);
     Product getById(long id) throws NotFoundException;
     Product update(long id, ProductUpdateRequest request) throws NotFoundException;
+    void delete(long id) throws NotFoundException;
 }

@@ -42,6 +42,11 @@ public class ProductController {
         return new ProductResponse(this.service.update(productId, body));
     }
 
+    @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteProduct(@PathVariable("id") Long productId) throws NotFoundException {
+        this.service.delete(productId);
+    }
+
 //    @GetMapping(value = "/amount/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 //    public @ResponseBody Long getAmount(@PathVariable("id") Long productId) {
 //        return productRepository.findProductById(productId).getAmount();

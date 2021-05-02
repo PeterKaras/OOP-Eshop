@@ -23,4 +23,9 @@ public class ProductService implements IProductService {
     public Product create(ProductRequest request) {
         return this.repository.save(new Product(request));
     }
+
+    @Override
+    public Product getById(long id) {
+        return this.repository.findProductById(id);
+    }
 }

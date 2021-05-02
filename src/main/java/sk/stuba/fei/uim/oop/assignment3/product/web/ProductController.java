@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.logic.IProductService;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductRequest;
@@ -31,12 +32,8 @@ public class ProductController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable("id") Long productId) {
-        Product product = this.service.getById(productId);
-        if (product == null) {
-            return notFound();
-        }
-        return ok(product);
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable("id") Long productId) throws NotFoundException {
+        return ok(this.service.getById(productId));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -58,10 +55,6 @@ public class ProductController {
         product.setAmount(product.getAmount() + amount);
         productRepository.save(product);
         return product.getAmount();
-    }
-
-    private ResponseEntity<ProductResponse> notFound() {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     private ResponseEntity<ProductResponse> ok(Product product) {

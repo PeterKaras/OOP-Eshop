@@ -158,6 +158,41 @@ class Assignment3ApplicationTests {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void testIncrementProductAmount() throws Exception {
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
+        Amount request = new Amount();
+        request.setAmount(10);
+        mockMvc.perform(post("/product/" + product.getId() + "/amount")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectToString(request)))
+                .andExpect(status().isOk())
+                .andDo(mvcResult -> {
+                    Amount response = stringToObject(mvcResult, Amount.class);
+                    assert Objects.equals(response.getAmount(), product.getAmount() + request.getAmount());
+                });
+        mockMvc.perform(get("/product/" + product.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(mvcResult -> {
+                    TestProductResponse response = stringToObject(mvcResult, TestProductResponse.class);
+                    assert Objects.equals(response.getAmount(), product.getAmount() + request.getAmount());
+                });
+    }
+
+    @Test
+    void testIncrementMissingProductAmount() throws Exception {
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
+        Amount request = new Amount();
+        request.setAmount(10);
+        mockMvc.perform(post("/product/" + (product.getId() + 1) + "/amount")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectToString(request)))
+                .andExpect(status().isNotFound());
+    }
+
     TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {
         return addProduct(name, description, unit, amount, status().is2xxSuccessful());
     }

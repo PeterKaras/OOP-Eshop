@@ -43,23 +43,26 @@ class Assignment3ApplicationTests {
 
     @Test
     void testAddProduct() throws Exception {
-        addProduct("name","description", "unit", 1L);
+        addProduct("name", "description", "unit", 1L);
     }
 
     @Test
     void testAddProduct201Response() throws Exception {
-        addProduct("name","description", "unit", 1L, status().isCreated());
+        addProduct("name", "description", "unit", 1L, status().isCreated());
     }
 
     @Test
     void testGetAllProduct() throws Exception {
-        addProduct("name","description", "unit", 1L);
-        addProduct("name2","description2", "unit2", 2L);
+        MvcResult result = mockMvc.perform(get("/product")
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+        addProduct("name", "description", "unit", 1L);
+        addProduct("name2", "description2", "unit2", 2L);
         mockMvc.perform(get("/product")
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andDo(mvcResult -> {
             var list = stringToObject(mvcResult, ArrayList.class);
-            assert list.size() == 2;
+            assert list.size() == 2 + stringToObject(result, ArrayList.class).size();
         });
     }
 
@@ -76,7 +79,8 @@ class Assignment3ApplicationTests {
 
     @Test
     void testGetMissingProductById() throws Exception {
-        mockMvc.perform(get("/product/100")
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
+        mockMvc.perform(get("/product/" + (product.getId() + 1))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -110,10 +114,27 @@ class Assignment3ApplicationTests {
 
     @Test
     void testUpdateMissingProduct() throws Exception {
-        mockMvc.perform(put("/product/100")
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
+        mockMvc.perform(put("/product/" + (product.getId() + 1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectToString(new TestProductRequest())))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteProduct() throws Exception {
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
+        mockMvc.perform(delete("/product/" + product.getId()))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/product/" + product.getId()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteMissingProduct() throws Exception {
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
+        mockMvc.perform(delete("/product/" + (product.getId() + 1)))
                 .andExpect(status().isNotFound());
     }
 

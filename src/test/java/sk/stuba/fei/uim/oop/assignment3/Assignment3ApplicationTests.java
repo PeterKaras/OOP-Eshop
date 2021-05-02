@@ -220,6 +220,16 @@ class Assignment3ApplicationTests {
         ).andExpect(status().isNotFound());
     }
 
+    @Test
+    void testPayForShoppingCart() throws Exception {
+        // TODO vymyslieť kontrolu či už bola zaplatená
+        TestCartResponse cart = addCart(status().isCreated());
+        mockMvc.perform(get("/cart/"+ cart.getId()+ "/pay")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk());
+    }
+
     TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {
         return addProduct(name, description, unit, amount, status().is2xxSuccessful());
     }

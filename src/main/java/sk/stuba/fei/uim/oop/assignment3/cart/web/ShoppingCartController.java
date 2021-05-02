@@ -31,6 +31,11 @@ public class ShoppingCartController {
         return new CartResponse(this.service.getById(cartId));
     }
 
+    @DeleteMapping(value = "/{id}")
+    public void delete(@PathVariable("id") long cartId) throws NotFoundException {
+        this.service.delete(cartId);
+    }
+
 //    @GetMapping(value = "/pay/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 //    public @ResponseBody ResponseEntity<Double> payCart(@PathVariable("id") Long cartId) {
 //        Optional<ShoppingCart> cart = cartRepository.findById(cartId);

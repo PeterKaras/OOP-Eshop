@@ -42,7 +42,7 @@ public class ProductController {
         return new ProductResponse(this.service.update(productId, body));
     }
 
-    @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{id}")
     public void deleteProduct(@PathVariable("id") Long productId) throws NotFoundException {
         this.service.delete(productId);
     }

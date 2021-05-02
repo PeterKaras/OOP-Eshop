@@ -30,4 +30,9 @@ public class ShoppingCartService implements IShoppingCartService {
         }
         return cart;
     }
+
+    @Override
+    public void delete(long id) throws NotFoundException {
+        this.repository.delete(this.getById(id));
+    }
 }

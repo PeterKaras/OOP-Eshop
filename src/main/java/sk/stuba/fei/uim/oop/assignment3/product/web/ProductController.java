@@ -10,6 +10,7 @@ import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.logic.IProductService;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductRequest;
 import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductResponse;
+import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductUpdateRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,32 +33,25 @@ public class ProductController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable("id") Long productId) throws NotFoundException {
-        return ok(this.service.getById(productId));
+    public ProductResponse getProduct(@PathVariable("id") Long productId) throws NotFoundException {
+        return new ProductResponse(this.service.getById(productId));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Product updateDescription(@PathVariable("id") Long productId, @RequestBody String description) {
-        Product product = productRepository.findProductById(productId);
-        product.setDescription(description);
-        productRepository.save(product);
-        return product;
+    public ProductResponse updateProduct(@PathVariable("id") Long productId, @RequestBody ProductUpdateRequest body) throws NotFoundException {
+        return new ProductResponse(this.service.update(productId, body));
     }
 
-    @GetMapping(value = "/amount/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Long getAmount(@PathVariable("id") Long productId) {
-        return productRepository.findProductById(productId).getAmount();
-    }
-
-    @PostMapping(value = "/amount/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Long addAmount(@PathVariable("id") Long productId, @RequestBody Long amount) {
-        Product product = productRepository.findProductById(productId);
-        product.setAmount(product.getAmount() + amount);
-        productRepository.save(product);
-        return product.getAmount();
-    }
-
-    private ResponseEntity<ProductResponse> ok(Product product) {
-        return new ResponseEntity<>(new ProductResponse(product), HttpStatus.NOT_FOUND);
-    }
+//    @GetMapping(value = "/amount/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public @ResponseBody Long getAmount(@PathVariable("id") Long productId) {
+//        return productRepository.findProductById(productId).getAmount();
+//    }
+//
+//    @PostMapping(value = "/amount/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public @ResponseBody Long addAmount(@PathVariable("id") Long productId, @RequestBody Long amount) {
+//        Product product = productRepository.findProductById(productId);
+//        product.setAmount(product.getAmount() + amount);
+//        productRepository.save(product);
+//        return product.getAmount();
+//    }
 }

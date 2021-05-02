@@ -1,24 +1,25 @@
-package sk.stuba.fei.uim.oop.assignment3.products.web;
+package sk.stuba.fei.uim.oop.assignment3.product.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import sk.stuba.fei.uim.oop.assignment3.products.data.Product;
-import sk.stuba.fei.uim.oop.assignment3.products.data.ProductRepository;
+import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
+import sk.stuba.fei.uim.oop.assignment3.product.logic.IProductService;
+import sk.stuba.fei.uim.oop.assignment3.product.web.bodies.ProductResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/product")
 public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
+    private IProductService service;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody
-    List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponse> getAllProducts() {
+        return service.getAll().stream().map(ProductResponse::new).collect(Collectors.toList());
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

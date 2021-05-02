@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import sk.stuba.fei.uim.oop.assignment3.cart.data.CartEntry;
 import sk.stuba.fei.uim.oop.assignment3.cart.data.ShoppingCart;
 import sk.stuba.fei.uim.oop.assignment3.cart.data.ShoppingCartRepository;
-import sk.stuba.fei.uim.oop.assignment3.products.data.Product;
-import sk.stuba.fei.uim.oop.assignment3.products.data.ProductRepository;
+import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
+import sk.stuba.fei.uim.oop.assignment3.product.data.ProductRepository;
 
 import java.util.Optional;
 

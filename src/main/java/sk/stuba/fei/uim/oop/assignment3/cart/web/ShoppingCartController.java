@@ -9,6 +9,7 @@ import sk.stuba.fei.uim.oop.assignment3.cart.data.ShoppingCart;
 import sk.stuba.fei.uim.oop.assignment3.cart.logic.IShoppingCartService;
 import sk.stuba.fei.uim.oop.assignment3.cart.web.bodies.CartEntry;
 import sk.stuba.fei.uim.oop.assignment3.cart.web.bodies.CartResponse;
+import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 
 import java.util.Optional;
@@ -23,6 +24,11 @@ public class ShoppingCartController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public CartResponse addCart() {
         return new CartResponse(this.service.create());
+    }
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CartResponse infoCart(@PathVariable("id") long cartId) throws NotFoundException {
+        return new CartResponse(this.service.getById(cartId));
     }
 
 //    @GetMapping(value = "/pay/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sk.stuba.fei.uim.oop.assignment3.cart.data.ShoppingCart;
 import sk.stuba.fei.uim.oop.assignment3.cart.data.ShoppingCartRepository;
+import sk.stuba.fei.uim.oop.assignment3.exception.NotFoundException;
 import sk.stuba.fei.uim.oop.assignment3.product.logic.IProductService;
 
 @Service
@@ -19,5 +20,14 @@ public class ShoppingCartService implements IShoppingCartService {
     @Override
     public ShoppingCart create() {
         return this.repository.save(new ShoppingCart());
+    }
+
+    @Override
+    public ShoppingCart getById(long id) throws NotFoundException {
+        ShoppingCart cart = this.repository.findShoppingCartById(id);
+        if (cart == null) {
+            throw new NotFoundException();
+        }
+        return cart;
     }
 }

@@ -2,6 +2,8 @@ package sk.stuba.fei.uim.oop.assignment3;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import sk.stuba.fei.uim.oop.assignment3.product.data.Product;
 import sk.stuba.fei.uim.oop.assignment3.product.web.ProductController;
 import sk.stuba.fei.uim.oop.assignment3.cart.web.ShoppingCartController;
@@ -45,6 +48,11 @@ class Assignment3ApplicationTests {
     }
 
     @Test
+    void testAddProduct201Response() throws Exception {
+        addProduct("name","description", "unit", 1L, status().isCreated());
+    }
+
+    @Test
     void testGetAllProduct() throws Exception {
         addProduct("name","description", "unit", 1L);
         addProduct("name2","description2", "unit2", 2L);
@@ -58,7 +66,7 @@ class Assignment3ApplicationTests {
 
     @Test
     void testGetProductById() throws Exception {
-        Product product = addProduct("name", "description", "unit", 1L);
+        TestProductResponse product = addProduct("name", "description", "unit", 1L);
         mockMvc.perform(get("/product/" + product.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andDo(mvcResult -> {
@@ -67,8 +75,12 @@ class Assignment3ApplicationTests {
         });
     }
 
-    Product addProduct(String name, String description, String unit, Long amount) throws Exception {
-        Product product = new Product();
+    TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {
+        return addProduct(name, description, unit, amount, status().is2xxSuccessful());
+    }
+
+    TestProductResponse addProduct(String name, String description, String unit, Long amount, ResultMatcher statusMatcher) throws Exception {
+        TestProductRequest product = new TestProductRequest();
         product.setName(name);
         product.setDescription(description);
         product.setUnit(unit);
@@ -77,16 +89,16 @@ class Assignment3ApplicationTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectToString(product))
-        ).andExpect(status().isOk())
+        ).andExpect(statusMatcher)
                 .andDo(mvcResult1 -> {
-                    Product productToControl = stringToObject(mvcResult1, Product.class);
+                    TestProductResponse productToControl = stringToObject(mvcResult1, TestProductResponse.class);
                     assert Objects.equals(product.getName(), productToControl.getName());
                     assert Objects.equals(product.getDescription(), productToControl.getDescription());
                     assert Objects.equals(product.getUnit(), productToControl.getUnit());
                     assert Objects.equals(product.getAmount(), productToControl.getAmount());
                 })
                 .andReturn();
-        return stringToObject(mvcResult, Product.class);
+        return stringToObject(mvcResult, TestProductResponse.class);
     }
 
 
@@ -102,4 +114,19 @@ class Assignment3ApplicationTests {
         return new ObjectMapper().readValue(object.getResponse().getContentAsString(), objectClass);
     }
 
+    @Getter
+    @Setter
+    private static class TestProductRequest {
+        private String name;
+        private String description;
+        private long amount;
+        private String unit;
+        private double price;
+    }
+
+    @Getter
+    @Setter
+    private static class TestProductResponse extends TestProductRequest {
+        private long id;
+    }
 }

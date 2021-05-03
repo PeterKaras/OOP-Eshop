@@ -265,7 +265,7 @@ class Assignment3ApplicationTests {
     }
 
     @Test
-    void testPayForMissingProduct() throws Exception {
+    void testAddForMissingProduct() throws Exception {
         TestCartResponse cart = addCart(status().isCreated());
         TestProductResponse product = addProduct("name", "description", "unit", 5L);
         TestCartEntry cartEntry = new TestCartEntry(product.getId() + 1 , product.getAmount() - 1);

@@ -2,7 +2,9 @@ package sk.stuba.fei.uim.oop.assignment3;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import sk.stuba.fei.uim.oop.assignment3.product.web.ProductController;
 import sk.stuba.fei.uim.oop.assignment3.cart.web.ShoppingCartController;
 
+import javax.print.attribute.standard.Media;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,7 +204,7 @@ class Assignment3ApplicationTests {
     }
 
     @Test
-    void testGetShoppingCartById() throws Exception{
+    void testGetShoppingCartById() throws Exception {
         TestCartResponse cart = addCart(status().isCreated());
         TestCartResponse cartToControl = getCart(cart.getId(), status().isOk());
         assert Objects.equals(cartToControl.getId(), cart.getId());
@@ -210,11 +213,11 @@ class Assignment3ApplicationTests {
     @Test
     void testDeleteShoppingCartById() throws Exception {
         TestCartResponse cart = addCart(status().isCreated());
-        mockMvc.perform(delete("/cart/"+ cart.getId())
+        mockMvc.perform(delete("/cart/" + cart.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
-        mockMvc.perform(get("/cart/"+ cart.getId())
+        mockMvc.perform(get("/cart/" + cart.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
@@ -222,12 +225,20 @@ class Assignment3ApplicationTests {
 
     @Test
     void testPayForShoppingCart() throws Exception {
-        // TODO vymyslieť kontrolu či už bola zaplatená
         TestCartResponse cart = addCart(status().isCreated());
-        mockMvc.perform(get("/cart/"+ cart.getId()+ "/pay")
+        TestProductResponse product = addProduct("name", "description", "unit", 5L);
+        TestCartEntry cartEntry = new TestCartEntry(product.getId(), product.getAmount() - 1);
+        mockMvc.perform(post("/cart/add/" + cart.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectToString(cartEntry))
+        ).andExpect(status().isOk()).andReturn();
+        mockMvc.perform(get("/cart/" + cart.getId() + "/pay")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk()).andReturn();
+        TestCartResponse cartResponse = getCart(cart.getId(), status().isOk());
+        assert cartResponse.isPayed();
     }
 
     TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {
@@ -264,8 +275,8 @@ class Assignment3ApplicationTests {
         return stringToObject(mvcResult, TestCartResponse.class);
     }
 
-    TestCartResponse getCart(long cartId,ResultMatcher statusMatcher) throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/cart/"+ cartId)
+    TestCartResponse getCart(long cartId, ResultMatcher statusMatcher) throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/cart/" + cartId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(statusMatcher).andDo(mvcResult1 -> {
@@ -318,6 +329,8 @@ class Assignment3ApplicationTests {
 
     @Getter
     @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     private static class TestCartEntry {
         private Long productId;
         private Long amount;

@@ -20,6 +20,8 @@ public class ShoppingCartService implements IShoppingCartService {
     @Autowired
     private IProductService productService;
 
+    @Autowired
+    private ICartEntryService cartEntryService;
 
     @Override
     public ShoppingCart create() {
@@ -46,9 +48,13 @@ public class ShoppingCartService implements IShoppingCartService {
         this.productService.removeAmount(body.getProductId(), body.getAmount());
         var existingEntry = this.findCartEntryWithProduct(cart.getShoppingList(), body.getProductId());
         if (existingEntry == null) {
-            cart.getShoppingList().add(this.createCartEntry(body));
+            sk.stuba.fei.uim.oop.assignment3.cart.data.CartEntry cartEntry = cartEntryService.create();
+            cartEntry.setAmount(body.getAmount());
+            cartEntry.setProduct(productService.getById(body.getProductId()));
+            cart.getShoppingList().add(cartEntryService.save(cartEntry));
         } else {
             existingEntry.setAmount(existingEntry.getAmount() + body.getAmount());
+            cartEntryService.save(existingEntry);
         }
         return this.repository.save(cart);
     }
@@ -77,9 +83,5 @@ public class ShoppingCartService implements IShoppingCartService {
             }
         }
         return null;
-    }
-
-    private sk.stuba.fei.uim.oop.assignment3.cart.data.CartEntry createCartEntry(CartEntry body) throws NotFoundException {
-        return new sk.stuba.fei.uim.oop.assignment3.cart.data.CartEntry(this.productService.getById(body.getProductId()), body.getAmount());
     }
 }

@@ -212,12 +212,7 @@ class Assignment3ApplicationTests {
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
         TestCartResponse cartResponse = stringToObject(mvcResult, TestCartResponse.class);
-        MvcResult mvcResult2 = mockMvc.perform(get("/cart/" + cart.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk()).andReturn();
-        TestCartResponse cartToControl = stringToObject(mvcResult2, TestCartResponse.class);
-        assert Objects.equals(cartToControl.getId(), cart.getId());
+        assert Objects.equals(cartResponse.getId(), cart.getId());
     }
 
     @Test

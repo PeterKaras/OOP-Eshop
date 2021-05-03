@@ -12,7 +12,7 @@ Pokiaľ je v API uvedené, že sa má vrátiť kód 404 a v popise nie je poveda
 
 ### Popis systému
 
-Podrovný popis jednotlivých operácii je uvedený v špecifikácii API.
+Podrobný popis jednotlivých operácii je uvedený v špecifikácii API.
 
 Systém umožňuje pridávanie a odoberanie produktov zo sortimentu obchodu. Ďalej umožňuje úpravu existujúcich produktov, ako aj navýšenie stavu produktov na sklade.
 

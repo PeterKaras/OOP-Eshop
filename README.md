@@ -18,6 +18,12 @@ Systém umožňuje pridávanie a odoberanie produktov zo sortimentu obchodu. Ďa
 
 Systém umožňuje vytváranie a vymazávanie objednávok. Do objednávok je možné pridávať produkty v určenom množstve (pokiaľ je produktu na sklade dostatok). Systém ďalej umožňuje zaplatenie ešte nezaplatených objednávok. Do zaplatených objednávok nie je možné pridávať ďalšie položky.
 
+## Automatizované testy
+
+Projekt obsahuje automatizované testy. Testy sa **NESPÚŠŤAJÚ** automaticky pri git push. Pokiaľ si chcete overiť na koľko vaša implementácia spĺňa testy musíte si ich spustiť sami. Testy sa dajú spustiť 2 spôsobmi:
+* cez Maven, spustením _test_ lifecycle-u (bočné menu > maven > _projekt_ > lifecycle > test)
+* spustením testov rovno z triedy ktorá ich obsahuje (nachádza sa v src/test/sk/.../oop/)
+
 ## Hodnotenie
 
 Zadanie je hodnotené 15 bodmi. **Odovzdaný program musí byť skompilovateľný, inak je

@@ -264,6 +264,18 @@ class Assignment3ApplicationTests {
         assert cartResponse.isPayed();
     }
 
+    @Test
+    void testPayForMissingProduct() throws Exception {
+        TestCartResponse cart = addCart(status().isCreated());
+        TestProductResponse product = addProduct("name", "description", "unit", 5L);
+        TestCartEntry cartEntry = new TestCartEntry(product.getId() + 1 , product.getAmount() - 1);
+        mockMvc.perform(post("/cart/add/" + cart.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectToString(cartEntry))
+        ).andExpect(status().isNotFound()).andReturn();
+    }
+
     TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {
         return addProduct(name, description, unit, amount, status().is2xxSuccessful());
     }

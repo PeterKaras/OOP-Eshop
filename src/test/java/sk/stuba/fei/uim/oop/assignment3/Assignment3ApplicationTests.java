@@ -14,10 +14,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
-import sk.stuba.fei.uim.oop.assignment3.product.web.ProductController;
 import sk.stuba.fei.uim.oop.assignment3.cart.web.ShoppingCartController;
+import sk.stuba.fei.uim.oop.assignment3.product.web.ProductController;
 
-import javax.print.attribute.standard.Media;
+import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class Assignment3ApplicationTests {
 
     @Autowired
@@ -206,8 +207,26 @@ class Assignment3ApplicationTests {
     @Test
     void testGetShoppingCartById() throws Exception {
         TestCartResponse cart = addCart(status().isCreated());
-        TestCartResponse cartToControl = getCart(cart.getId(), status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get("/cart/" + cart.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+        TestCartResponse cartResponse = stringToObject(mvcResult, TestCartResponse.class);
+        MvcResult mvcResult2 = mockMvc.perform(get("/cart/" + cart.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+        TestCartResponse cartToControl = stringToObject(mvcResult2, TestCartResponse.class);
         assert Objects.equals(cartToControl.getId(), cart.getId());
+    }
+
+    @Test
+    void testGetMissingShoppingCartById() throws Exception {
+        TestCartResponse cart = addCart(status().isCreated());
+        mockMvc.perform(get("/cart/" + cart.getId() + 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
     }
 
     @Test
@@ -237,7 +256,11 @@ class Assignment3ApplicationTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()).andReturn();
-        TestCartResponse cartResponse = getCart(cart.getId(), status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get("/cart/" + cart.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+        TestCartResponse cartResponse = stringToObject(mvcResult, TestCartResponse.class);
         assert cartResponse.isPayed();
     }
 
@@ -272,17 +295,6 @@ class Assignment3ApplicationTests {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(statusMatcher)
                 .andReturn();
-        return stringToObject(mvcResult, TestCartResponse.class);
-    }
-
-    TestCartResponse getCart(long cartId, ResultMatcher statusMatcher) throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/cart/" + cartId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(statusMatcher).andDo(mvcResult1 -> {
-            TestCartResponse cartToControl = stringToObject(mvcResult1, TestCartResponse.class);
-            assert Objects.equals(cartToControl.getId(), cartId);
-        }).andReturn();
         return stringToObject(mvcResult, TestCartResponse.class);
     }
 

@@ -268,12 +268,28 @@ class Assignment3ApplicationTests {
     void testAddForMissingProduct() throws Exception {
         TestCartResponse cart = addCart(status().isCreated());
         TestProductResponse product = addProduct("name", "description", "unit", 5L);
-        TestCartEntry cartEntry = new TestCartEntry(product.getId() + 1 , product.getAmount() - 1);
+        TestCartEntry cartEntry = new TestCartEntry(product.getId() + 1, product.getAmount() - 1);
         mockMvc.perform(post("/cart/add/" + cart.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectToString(cartEntry))
         ).andExpect(status().isNotFound()).andReturn();
+    }
+
+    @Test
+    void testPayForMissingCart() throws Exception {
+        TestCartResponse cart = addCart(status().isCreated());
+        TestProductResponse product = addProduct("name", "description", "unit", 5L);
+        TestCartEntry cartEntry = new TestCartEntry(product.getId(), product.getAmount() - 1);
+        mockMvc.perform(post("/cart/add/" + cart.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectToString(cartEntry))
+        ).andExpect(status().isOk()).andReturn();
+        mockMvc.perform(get("/cart/" + cart.getId() + "/pay")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk());
     }
 
     TestProductResponse addProduct(String name, String description, String unit, Long amount) throws Exception {

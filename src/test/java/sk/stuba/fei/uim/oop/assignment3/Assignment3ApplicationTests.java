@@ -32,19 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class Assignment3ApplicationTests {
 
     @Autowired
-    ProductController productController;
-
-    @Autowired
-    ShoppingCartController shoppingCartController;
-
-    @Autowired
     private MockMvc mockMvc;
-
-    @Test
-    void contextLoads() {
-        assert Objects.nonNull(productController);
-        assert Objects.nonNull(shoppingCartController);
-    }
 
     @Test
     void testAddProduct() throws Exception {

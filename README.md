@@ -47,14 +47,14 @@ V projekte upravujte iba súbory v priečinku _src/main_ a jeho podpriečinkoch.
 
 Vo svojom github účte si nastavte svoje meno (settings > profile > name), aby bolo možné priradiť riešenie ku študentovy. **Pokiaľ nebude možné spárovať študenta s riešením je zadanie hodnotené 0 bodmi!**
 
-[comment]: <> (TODO)
-[comment]: <> (# Assignment 2 - Rook in a maze)
 
-[comment]: <> (B-OOP 2021)
+# Assignment 3 - Eshop
 
-[comment]: <> (Your task is to create a java window application with the Swing library. The user interface of the application must consist of:)
+B-OOP 2021
 
-[comment]: <> (* canvas)
+Your task is to create an application server using Java with the Spring framework.
+
+Application server  enables management of the goods, warehouse and shopping carts. Web Interface(API), and also the objects that are used to communicate with the outside world are defined in the specification and must be used to communicate through web services.   
 
 [comment]: <> (* side menu &#40;you can choose the location of this side menu freely&#41;)
 
@@ -84,38 +84,38 @@ Vo svojom github účte si nastavte svoje meno (settings > profile > name), aby 
 
 
 
-[comment]: <> (## Grading)
+## Valuation
 
-[comment]: <> (You can get 15 points for this assignment. **The program must be able to compile, otherwise 0 points are given for the assigment**.)
+You can get 15 points for this assignment. **The program must be able to compile, otherwise 0 points are given for the assigment**.
 
-[comment]: <> (The github pipeline checks whether the program can be compiled. The main focus during grading is put on object-oriented approach and OOP principles used by the solution.)
+The github pipeline checks whether the program can be compiled. The main focus during grading is put on object-oriented approach and OOP principles used by the solution.
 
-[comment]: <> (Including, but not limited to:)
+Including, but not limited to:
 
-[comment]: <> (* appropriate naming of classes, methods and variables in a single language &#40;class names starting with a capital letter, method names starting with a lowercase letter&#41;,)
+* appropriate naming of classes, methods and variables in a single language (class names starting with a capital letter, method names starting with a lowercase letter),
 
-[comment]: <> (* appropriate use of access modifiers &#40;public, private, or protected&#41; when restricting access to class methods and attributes,)
+* appropriate use of access modifiers (public, private, or protected) when restricting access to class methods and attributes,
 
-[comment]: <> (* the use of inheritance and polymorphism,)
+* the use of inheritance and polymorphism,
 
-[comment]: <> (* usage of exceptions when handling undesired behavior &#40;do not catch or throw the instances of the generic Exception class&#41;,)
+* usage of exceptions when handling undesired behavior (do not catch or throw the instances of the generic Exception class),
 
-[comment]: <> (* don't use nested classes,)
+* don't use nested classes,
 
-[comment]: <> (* don't use static methods, or non-constant static variables &#40;you don't need them to complete the assignment&#41;,)
+* don't use static methods, or non-constant static variables (you don't need them to complete the assignment),
 
-[comment]: <> (* don't put any logic into the main method and its class. The main method should only be used to create a new object,)
+* don't put any logic into the main method and its class. The main method should only be used to create a new object,
 
-[comment]: <> (* you can use the lombok library and its annotations in your solution. The neccessary dependency is already present in the _pom.xml_ file.)
+* you can use the lombok library and its annotations in your solution. The neccessary dependency is already present in the _pom.xml_ file.
 
-[comment]: <> (## Handing in the assigment)
+## Handing in the assigment
 
-[comment]: <> (Clone the assignment from the repository created from this template by the provided link trough GitHub Classroom &#40;if you create your own repository with the "use this template" button, we won't be able to see your repository and we won't be able to grade it!&#41;. Upload your solutions to your repository using the Git version control system &#40;git commit + git push&#41;.)
+Clone the assignment from the repository created from this template by the provided link trough GitHub Classroom (if you create your own repository with the "use this template" button, we won't be able to see your repository and we won't be able to grade it!). Upload your solutions to your repository using the Git version control system (git commit + git push).
 
-[comment]: <> (Make sure, that your repository was created under the **Interes-Group** group, otherwise we won't be able to access your repository, and the assignment will not be graded.)
+Make sure, that your repository was created under the **Interes-Group** group, otherwise we won't be able to access your repository, and the assignment will not be graded.
 
-[comment]: <> (You can push commits to the repository while you work - you don't have to push everything at once. Only the code in the _master_ branch will be graded. You have until **23.4.2021 23:00** to complete the assignment.)
+You can push commits to the repository while you work - you don't have to push everything at once. Only the code in the _master_ branch will be graded. You have until **23.4.2021 23:00** to complete the assignment.
 
-[comment]: <> (Only edit files in the _src/main_ folder or its sub-folders. You mustn't change any other files in the repository &#40;especially the _pom.xml_ file, and the github pipeline files&#41;.)
+Only edit files in the _src/main_ folder or its sub-folders. You mustn't change any other files in the repository (especially the _pom.xml_ file, and the github pipeline files).
 
-[comment]: <> (You have to have your name set in your github account &#40;settings > profile > name&#41;, so that we can match students with their assignments. **If we are unable to match a student with their assignment, the student will receive 0 points for the assignment!**)
+You have to have your name set in your github account (settings > profile > name), so that we can match students with their assignments. **If we are unable to match a student with their assignment, the student will receive 0 points for the assignment!**

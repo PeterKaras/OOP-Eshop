@@ -14,8 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
-import sk.stuba.fei.uim.oop.assignment3.cart.web.ShoppingCartController;
-import sk.stuba.fei.uim.oop.assignment3.product.web.ProductController;
 
 import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
@@ -189,12 +187,17 @@ class Assignment3ApplicationTests {
     // ShoppingCart tests ==========================================================================================
     @Test
     void testAddShoppingCart() throws Exception {
+        addCart();
+    }
+
+    @Test
+    void testAddShoppingCart201Response() throws Exception {
         addCart(status().isCreated());
     }
 
     @Test
     void testGetShoppingCartById() throws Exception {
-        TestCartResponse cart = addCart(status().isCreated());
+        TestCartResponse cart = addCart();
         MvcResult mvcResult = mockMvc.perform(get("/cart/" + cart.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -205,7 +208,7 @@ class Assignment3ApplicationTests {
 
     @Test
     void testGetMissingShoppingCartById() throws Exception {
-        TestCartResponse cart = addCart(status().isCreated());
+        TestCartResponse cart = addCart();
         mockMvc.perform(get("/cart/" + cart.getId() + 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -214,7 +217,7 @@ class Assignment3ApplicationTests {
 
     @Test
     void testDeleteShoppingCartById() throws Exception {
-        TestCartResponse cart = addCart(status().isCreated());
+        TestCartResponse cart = addCart();
         mockMvc.perform(delete("/cart/" + cart.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -226,8 +229,17 @@ class Assignment3ApplicationTests {
     }
 
     @Test
+    void testDeleteMissingShoppingCartById() throws Exception {
+        TestCartResponse cart = addCart();
+        mockMvc.perform(delete("/cart/" + cart.getId() + 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
     void testPayForShoppingCart() throws Exception {
-        TestCartResponse cart = addCart(status().isCreated());
+        TestCartResponse cart = addCart();
         TestProductResponse product = addProduct("name", "description", "unit", 5L);
         TestCartEntry cartEntry = new TestCartEntry(product.getId(), product.getAmount() - 1);
         mockMvc.perform(post("/cart/add/" + cart.getId())
@@ -249,7 +261,7 @@ class Assignment3ApplicationTests {
 
     @Test
     void testAddForMissingProduct() throws Exception {
-        TestCartResponse cart = addCart(status().isCreated());
+        TestCartResponse cart = addCart();
         TestProductResponse product = addProduct("name", "description", "unit", 5L);
         TestCartEntry cartEntry = new TestCartEntry(product.getId() + 1, product.getAmount() - 1);
         mockMvc.perform(post("/cart/add/" + cart.getId())
@@ -261,7 +273,7 @@ class Assignment3ApplicationTests {
 
     @Test
     void testPayForMissingCart() throws Exception {
-        TestCartResponse cart = addCart(status().isCreated());
+        TestCartResponse cart = addCart();
         TestProductResponse product = addProduct("name", "description", "unit", 5L);
         TestCartEntry cartEntry = new TestCartEntry(product.getId(), product.getAmount() - 1);
         mockMvc.perform(post("/cart/add/" + cart.getId())
@@ -299,6 +311,10 @@ class Assignment3ApplicationTests {
                 })
                 .andReturn();
         return stringToObject(mvcResult, TestProductResponse.class);
+    }
+
+    TestCartResponse addCart() throws Exception {
+        return addCart(status().is2xxSuccessful());
     }
 
     TestCartResponse addCart(ResultMatcher statusMatcher) throws Exception {

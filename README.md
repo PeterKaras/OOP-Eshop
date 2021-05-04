@@ -54,8 +54,11 @@ B-OOP 2021
 
 Your task is to create an application server using Java with the Spring framework.
 
-Application server  enables management of the goods, warehouse and shopping carts. Web Interface(API), and also the objects that are used to communicate with the outside world are defined in the specification and must be used to communicate through web services.   
+Application server  enables management of the goods, warehouse and shopping carts. Web Interface(API), and also the objects that are used to communicate with the outside world are defined in the specification and must be used to communicate through web services. Outside the web interface you can use any other objects according to your design, if you deem it appropriate.
 
+Web interface specification that the application has to provide can be found here: https://app.swaggerhub.com/apis-docs/sk-stuba-fei-uim-oop/OOP_Zadanie_3/1.0.0
+
+If the specification states that a 404 code should be returned, and the description does not say when, it is necessary to return if given ID does not exist in the system.
 [comment]: <> (* side menu &#40;you can choose the location of this side menu freely&#41;)
 
 [comment]: <> (When the application starts, generate a maze using the [randomized depth first search]&#40;https://www.baeldung.com/cs/maze-generation#dfs-maze&#41; algorithm and draw it onto the canvas.)

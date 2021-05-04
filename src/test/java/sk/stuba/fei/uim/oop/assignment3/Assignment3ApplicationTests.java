@@ -297,6 +297,17 @@ class Assignment3ApplicationTests {
     }
 
     @Test
+    void addProductToCartExistingProduct() throws Exception {
+        TestCartResponse cart = addCart();
+        TestProductResponse product = addProduct(10L);
+        addProductToCart(product, cart, 5L);
+        TestCartResponse updatedCart = addProductToCart(product, cart, 5L);
+        assert updatedCart.getShoppingList().size() == 1;
+        assert updatedCart.getShoppingList().get(0).productId == product.getId();
+        assert updatedCart.getShoppingList().get(0).amount == 10L;
+    }
+
+    @Test
     void testPayForShoppingCart() throws Exception {
         TestCartResponse cart = addCart();
         TestProductResponse product = addProduct(5L, 10.0);
@@ -323,17 +334,40 @@ class Assignment3ApplicationTests {
     void testPayForMissingCart() throws Exception {
         TestCartResponse cart = addCart();
         TestProductResponse product = addProduct(5L);
-        TestCartEntry cartEntry = new TestCartEntry(product.getId(), product.getAmount() - 1);
-        mockMvc.perform(post("/cart/add/" + cart.getId())
-                .contentType(MediaType.APPLICATION_JSON)
+        addProductToCart(product, cart, 4L);
+        mockMvc.perform(get("/cart/" + (cart.getId() + 1) + "/pay")
                 .accept(MediaType.TEXT_PLAIN)
-                .content(objectToString(cartEntry))
-        ).andExpect(status().isOk()).andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testPayForCartTwice() throws Exception {
+        TestCartResponse cart = addCart();
+        TestProductResponse product = addProduct(5L);
+        addProductToCart(product, cart, 4L);
         mockMvc.perform(get("/cart/" + cart.getId() + "/pay")
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.TEXT_PLAIN)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
+        mockMvc.perform(get("/cart/" + cart.getId() + "/pay")
+                .accept(MediaType.TEXT_PLAIN)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
     }
+
+    @Test
+    void addProductToCartPayedCart() throws Exception {
+        TestCartResponse cart = addCart();
+        TestProductResponse product = addProduct(5L);
+        mockMvc.perform(get("/cart/" + cart.getId() + "/pay")
+                .accept(MediaType.TEXT_PLAIN)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk());
+        addProductToCart(product, cart, 4L, status().isBadRequest());
+    }
+
+
     TestProductResponse addProduct() throws Exception {
         return addProduct("name", "description", "unit", 1L, 10.0, status().is2xxSuccessful());
     }

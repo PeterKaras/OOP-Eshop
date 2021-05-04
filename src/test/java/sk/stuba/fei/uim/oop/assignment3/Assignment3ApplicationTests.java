@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -252,13 +253,47 @@ class Assignment3ApplicationTests {
     void addProductToCartRemovesFromStorage() throws Exception {
         TestCartResponse cart = addCart();
         TestProductResponse product = addProduct("name", "description", "unit", 5L);
-        TestCartResponse updatedCart = addProductToCart(product, cart, 2L);
+        addProductToCart(product, cart, 2L);
         mockMvc.perform(get("/product/" + product.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andDo(mvcResult -> {
             TestProductResponse productToControl = stringToObject(mvcResult, TestProductResponse.class);
             assert Objects.equals(productToControl.getAmount(), 3L);
         });
+    }
+
+    @Test
+    void addProductToCartNotEnoughProduct() throws Exception {
+        TestCartResponse cart = addCart();
+        TestProductResponse product = addProduct("name", "description", "unit", 5L);
+        addProductToCart(product, cart, 10L, status().isBadRequest());
+        mockMvc.perform(get("/product/" + product.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andDo(mvcResult -> {
+            TestProductResponse productToControl = stringToObject(mvcResult, TestProductResponse.class);
+            assert Objects.equals(productToControl.getAmount(), 5L);
+        });
+        assert cart.getShoppingList().isEmpty();
+        mockMvc.perform(get("/cart/" + cart.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andDo(mvcResult -> {
+            TestCartResponse cartToControl = stringToObject(mvcResult, TestCartResponse.class);
+            assert cartToControl.getShoppingList().isEmpty();
+        });
+    }
+
+    @Test
+    void addProductToCartMissingProduct() throws Exception {
+        TestCartResponse cart = addCart();
+        TestProductResponse product = addProduct("name", "description", "unit", 5L);
+        addProductToCart(product.getId() + 1, cart.getId(), 5L, status().isNotFound());
+    }
+
+    @Test
+    void addProductToCartMissingCart() throws Exception {
+        TestCartResponse cart = addCart();
+        TestProductResponse product = addProduct("name", "description", "unit", 5L);
+        addProductToCart(product.getId(), cart.getId() + 1, 5L, status().isNotFound());
     }
 
     @Test
@@ -365,7 +400,10 @@ class Assignment3ApplicationTests {
                 .content(objectToString(cartEntry)))
                 .andExpect(statusMatcher)
                 .andReturn();
-        return stringToObject(mvcResult, TestCartResponse.class);
+        if (mvcResult.getResponse().getStatus() == HttpStatus.OK.value()) {
+            return stringToObject(mvcResult, TestCartResponse.class);
+        }
+        return null;
     }
 
     static String objectToString(Object object) {

@@ -38,9 +38,9 @@ public class ShoppingCartController {
         return new CartResponse(this.service.addToCart(cartId, cartEntry));
     }
 
-    @GetMapping(value = "/{id}/pay", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Double payForCart(@PathVariable("id") Long cartId) throws NotFoundException, IllegalOperationException {
-        return this.service.payForCart(cartId);
+    @GetMapping(value = "/{id}/pay", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String payForCart(@PathVariable("id") Long cartId) throws NotFoundException, IllegalOperationException {
+        return "" + this.service.payForCart(cartId);
     }
 
 }

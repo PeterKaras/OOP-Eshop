@@ -238,6 +238,30 @@ class Assignment3ApplicationTests {
     }
 
     @Test
+    void addProductToCart() throws Exception {
+        TestCartResponse cart = addCart();
+        TestProductResponse product = addProduct("name", "description", "unit", 5L);
+        assert cart.getShoppingList().isEmpty();
+        TestCartResponse updatedCart = addProductToCart(product, cart, 2L);
+        assert updatedCart.getShoppingList().size() == 1;
+        assert updatedCart.getShoppingList().get(0).productId == product.getId();
+        assert updatedCart.getShoppingList().get(0).amount == 2L;
+    }
+
+    @Test
+    void addProductToCartRemovesFromStorage() throws Exception {
+        TestCartResponse cart = addCart();
+        TestProductResponse product = addProduct("name", "description", "unit", 5L);
+        TestCartResponse updatedCart = addProductToCart(product, cart, 2L);
+        mockMvc.perform(get("/product/" + product.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andDo(mvcResult -> {
+            TestProductResponse productToControl = stringToObject(mvcResult, TestProductResponse.class);
+            assert Objects.equals(productToControl.getAmount(), 3L);
+        });
+    }
+
+    @Test
     void testPayForShoppingCart() throws Exception {
         TestCartResponse cart = addCart();
         TestProductResponse product = addProduct("name", "description", "unit", 5L);
@@ -320,6 +344,25 @@ class Assignment3ApplicationTests {
     TestCartResponse addCart(ResultMatcher statusMatcher) throws Exception {
         MvcResult mvcResult = mockMvc.perform(post("/cart")
                 .accept(MediaType.APPLICATION_JSON))
+                .andExpect(statusMatcher)
+                .andReturn();
+        return stringToObject(mvcResult, TestCartResponse.class);
+    }
+
+    TestCartResponse addProductToCart(TestProductResponse product, TestCartResponse cart, long amount) throws Exception {
+        return addProductToCart(product.getId(), cart.getId(), amount, status().isOk());
+    }
+
+    TestCartResponse addProductToCart(TestProductResponse product, TestCartResponse cart, long amount, ResultMatcher statusMatcher) throws Exception {
+        return addProductToCart(product.getId(), cart.getId(), amount, statusMatcher);
+    }
+
+    TestCartResponse addProductToCart(long productId, long cartId, long amount, ResultMatcher statusMatcher) throws Exception {
+        TestCartEntry cartEntry = new TestCartEntry(productId, amount);
+        MvcResult mvcResult = mockMvc.perform(post("/cart/" + cartId + "/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectToString(cartEntry)))
                 .andExpect(statusMatcher)
                 .andReturn();
         return stringToObject(mvcResult, TestCartResponse.class);

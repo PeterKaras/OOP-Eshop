@@ -22,7 +22,7 @@ Systém umožňuje vytváranie a vymazávanie objednávok. Do objednávok je mo�
 
 Projekt obsahuje automatizované testy. Testy sa **NESPÚŠŤAJÚ** automaticky pri git push. Pokiaľ si chcete overiť na koľko vaša implementácia spĺňa testy musíte si ich spustiť sami. Testy sa dajú spustiť 2 spôsobmi:
 * cez Maven, spustením _test_ lifecycle-u (bočné menu > maven > _projekt_ > lifecycle > test)
-* spustením testov rovno z triedy ktorá ich obsahuje (nachádza sa v src/test/sk/.../oop/)
+* spustením testov rovno z triedy ktorá ich obsahuje (nachádza sa v src/test/sk/.../oop/assignment3/Assignment3ApplicationTests.java)
 
 ## Hodnotenie
 
@@ -59,33 +59,20 @@ Application server  enables management of the goods, warehouse and shopping cart
 Web interface specification that the application has to provide can be found here: https://app.swaggerhub.com/apis-docs/sk-stuba-fei-uim-oop/OOP_Zadanie_3/1.0.0
 
 If the specification states that a 404 code should be returned, and the description does not say when, it is necessary to return if given ID does not exist in the system.
-[comment]: <> (* side menu &#40;you can choose the location of this side menu freely&#41;)
 
-[comment]: <> (When the application starts, generate a maze using the [randomized depth first search]&#40;https://www.baeldung.com/cs/maze-generation#dfs-maze&#41; algorithm and draw it onto the canvas.)
+### System description
 
-[comment]: <> (The grid containing the maze must be at least 11x11 tiles large &#40;including wall tiles&#41;. The entire maze must be surrounded by walls &#40;no paths in the maze can touch the borders of the window&#41;.)
+A detailed description of each operation is given in the API specification.
 
-[comment]: <> (In the generated maze choose in any way a starting and a goal point. Place the player figure on the starting point. The player can move their figure in 3 ways:)
+The system allows adding and removing products from the store's assortment. Also, it allows editing of existing products as well as increase the status of products in stock.
 
-[comment]: <> (* by using the arrows keys on their keyboard. Always by one tile in the specified direction. They cannot enter a tile that contains a wall.)
+The system allows you to create and delete orders. It is possible to add products in orders in the specified quantity (if there is enough product in stock). The system also allows the payment of unpaid orders. It is not possible to add additional items to paid orders.
 
-[comment]: <> (* by using the mouse. When the player figure is clicked, it can be moved like a rook chess piece &#40;i.e. any number of tiles in the horizontal, or vertical directions&#41;.)
+## Automatic tests
+Project contains automatic tests. Tests **DO NOT** run automatically on git push. If you want to verify how many of your implementations pass the tests, you must run them yourself. Tests can be run in 2 ways:
 
-[comment]: <> (  The destination is chosen by a second mouse click. Tiles that can be moved to in this manner must be highlighted, when the mouse hovers over them. When moving in this manner, the player cannot jump over walls.)
-
-[comment]: <> (* by using buttons on the side menu, that represent the arrow keys. The rules for moving in this manner are the same, as for the movement by the arrow keys on the keyboard.)
-
-[comment]: <> (When the player reaches the goal point, the application should generate a new maze and the game starts over.)
-
-[comment]: <> (The side menu must contain:)
-
-[comment]: <> (* a counter of successfully completed mazes)
-
-[comment]: <> (* a button that resets the counter and generates a new maze)
-
-[comment]: <> (* buttons representing the arrow keys, which can be used to move the player. These buttons must be placed in the same way, they are placed on a regular keyboard.)
-
-
+* using Maven, by launching lifecycle (side menu> maven> project> lifecycle> test)
+* by running tests directly from the class that contains them (located in rc/test/sk/.../oop/assignment3/Assignment3ApplicationTests.java))
 
 ## Valuation
 
@@ -107,7 +94,7 @@ Including, but not limited to:
 
 * don't use static methods, or non-constant static variables (you don't need them to complete the assignment),
 
-* don't put any logic into the main method and its class. The main method should only be used to create a new object,
+* don't put any logic into the main method and its class. The main method should only be used to initialize application using the Spring framework,
 
 * you can use the lombok library and its annotations in your solution. The neccessary dependency is already present in the _pom.xml_ file.
 

@@ -365,6 +365,18 @@ class Assignment3ApplicationTests {
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
         addProductToCart(product, cart, 4L, status().isBadRequest());
+        mockMvc.perform(get("/product/" + product.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andDo(mvcResult -> {
+            TestProductResponse productToControl = stringToObject(mvcResult, TestProductResponse.class);
+            assert Objects.equals(productToControl.getAmount(), 5L);
+        });
+        mockMvc.perform(get("/cart/" + cart.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andDo(mvcResult -> {
+            TestCartResponse cartToControl = stringToObject(mvcResult, TestCartResponse.class);
+            assert cartToControl.getShoppingList().isEmpty();
+        });
     }
 
 
